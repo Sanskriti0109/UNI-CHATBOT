@@ -33,5 +33,7 @@ It's an interactive chatbot web app tailored for students that simulates intelli
 - **CSS Animation** – Chat fade-in, typing effect, button hover states
 - **Custom Background** – Image of MUJ Dome used for visual identity
 
+![Image](https://github.com/user-attachments/assets/04999c24-08ec-4fb3-b333-2bc3192dd9c2)
+
 
 
