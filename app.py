@@ -6,7 +6,7 @@ import re
 import random
 
 # Configure the API key
-genai.configure(api_key="GEMINI API KEY")
+genai.configure(api_key="AIzaSyBwKhC_kxPeuBPMHNJsT8rv-ZN2GT-NFu4")
 
 # Use a consistent model name
 MODEL_NAME = "gemini-1.5-flash-latest"
