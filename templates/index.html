@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUJ BOT</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/static/muj_background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #chat-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 25px;
+            backdrop-filter: blur(3px);
+        }
+        #chatbox { 
+            width: calc(100% - 30px);
+            height: 450px;
+            margin: auto; 
+            text-align: left; 
+            border: 1px solid #ddd; 
+            border-radius: 10px;
+            padding: 15px; 
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            display: inline-block;
+            word-wrap: break-word;
+            line-height: 1.4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            animation: fadeIn 0.3s ease;
+            max-width: 80%;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message-container {
+            width: 100%;
+            margin-bottom: 12px;
+            display: flex;
+        }
+        .user-container {
+            justify-content: flex-end;
+        }
+        .assistant-container {
+            justify-content: flex-start;
+        }
+        .user { 
+            color: white;
+            background-color: #0084ff;
+            text-align: right;
+        }
+        .assistant { 
+            color: #333;
+            background-color: #e9e9eb;
+            text-align: left;
+        }
+        #input-area {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #userInput {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        #userInput:focus {
+            border-color: #0084ff;
+            box-shadow: 0 0 5px rgba(0,132,255,0.3);
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0066cc;
+        }
+        .clear-btn {
+            background-color: #ff3b30;
+            margin-bottom: 0;
+            width: 40px;
+            height: 40px;
+        }
+        .clear-btn:hover {
+            background-color: #d63026;
+        }
+        h2 {
+            color: #0066cc;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #0084ff;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .typing-indicator {
+            display: inline-block;
+            margin-left: 5px;
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-right: 5px;
+            background-color: #555;
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div class="header">
+            <div class="title-container">
+                <img src="/static/muj_logo.png" alt="MUJ Logo" class="logo">
+                <h2>MUJ BOT</h2>
+            </div>
+            <button class="btn clear-btn" onclick="clearChat()">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+        <div id="chatbox"></div>
+        <div id="input-area">
+            <input type="text" id="userInput" placeholder="Type a message..." />
+            <button class="btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("userInput").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    sendMessage();
+                }
+            });
+            
+           addAssistantMessage("Hello! I'm MUJ Bot. How can I assist you with information about our university today?");
+        });
+            function addUserMessage(text) {
+            let chatbox = document.getElementById("chatbox");
+            let messageContainer = document.createElement("div");
+            messageContainer.className = "message-container user-container";
+            
+            let messageDiv = document.createElement("div");
+            messageDiv.className = "message user";
+            messageDiv.textContent = text;
+            
+            messageContainer.appendChild(messageDiv);
+            chatbox.appendChild(messageContainer);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+        
+        function addAssistantMessage(text) {
+            let chatbox = document.getElementById("chatbox");
+            let messageContainer = document.createElement("div");
+            messageContainer.className = "message-container assistant-container";
+            
+            let messageDiv = document.createElement("div");
+            messageDiv.className = "message assistant";
+            messageDiv.textContent = text;
+            
+            messageContainer.appendChild(messageDiv);
+            chatbox.appendChild(messageContainer);
+            chatbox.scrollTop = chatbox.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        function sendMessage() {
+            let userInput = document.getElementById("userInput").value;
+            if (userInput.trim() === "") return;
+            
+            // Add user message
+            addUserMessage(userInput);
+            
+            // Clear input field
+            document.getElementById("userInput").value = "";
+            
+            let thinkingDiv = addAssistantMessage("Thinking");
+            thinkingDiv.innerHTML = "Thinking<div class='typing-indicator'><span></span><span></span><span></span></div>";
+            
+            // Send request to server
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                thinkingDiv.textContent = data.response;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                thinkingDiv.textContent = "Sorry, I couldn't process your request. Please try again later.";
+            });
+        }
+            function clearChat() {
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML = "";
+             // Add welcome message again
+            addAssistantMessage("Chat cleared! How can I help you with MUJ information today?");
+        }
+    </script>
+</body>
+</html>
