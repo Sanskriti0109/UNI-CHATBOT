@@ -32,3 +32,5 @@ UNI BOT is an intelligent AI-powered chatbot developed using Flask and Google Ge
 | Git Integration   | Version control and GitHub project organization    |
 
 ---
+
+![Image](https://github.com/user-attachments/assets/af0dc1dd-add8-42d1-ac5f-b884486247a3)
